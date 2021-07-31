@@ -1,7 +1,37 @@
-APT-REPO-SERVER
+Debian Paket Sunucusu
 =========================
 
 apt-repo-server is a debian repository server. It monitors file changing event(inotify), then reproduce index file(Packages.gz) automatically.
+
+# [Supervisord](http://supervisord.org/running.html)
+----------------------
+Supervisord veya Supervisor arka plan programı (daemon), açık kaynaklı bir süreç yönetim sistemidir. Özetle: bir süreç herhangi bir nedenle çökerse, Supervisor onu yeniden başlatır. Supervisor, kullanıcılarının UNIX benzeri işletim sistemlerinde bir dizi işlemi izlemesini ve kontrol etmesini sağlayan bir istemci/sunucu sistemidir. 
+
+Launchd, daemontools ve runit gibidir ve bu programların bazılarından farklı olarak, “işlem kimliği 1” (pid 1 yani ilk çalışacak program) olarak init'in yerini alacak şekilde çalıştırılması amaçlanmamıştır. Bunun yerine, bir proje veya müşteriyle ilgili süreçleri kontrol etmek için kullanılması ve diğer herhangi bir program gibi önyükleme sırasında başlaması amaçlanmıştır. 
+
+```
+sudo apt install supervisor
+```
+
+`/etc/init.d/supervisord` Dosyası ayarları içerir
+
+``` Dockerfile 
+ADD supervisord.conf /etc/supervisor/
+```
+
+Hizmet yürütülebilir dosyasının root tarafından sahiplenildiğinden ve yürütülebilir olduğundan emin olun:
+```
+sudo chown root:root /etc/init.d/supervisord
+sudo chmod 775 /etc/init.d/supervisord
+```
+
+Başlatmak için:
+1)
+```
+sudo /etc/init.d/supervisord start
+```
+2) komut satırında -n bayrağını ileterek ön planda başlatabilirsiniz.
+
 
 Usage
 =======================
