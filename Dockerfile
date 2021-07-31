@@ -1,10 +1,16 @@
-FROM ubuntu:14.04.3
-MAINTAINER Doro Wu <fcwu.tw@gmail.com>
+FROM ubuntu:focal
+MAINTAINER Cem Topkaya
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# supervisor için http://supervisord.org/running.html
 RUN apt-get update \
-    && apt-get install -y --force-yes --no-install-recommends dpkg-dev nginx inotify-tools supervisor python-gevent \
+    && apt-get install -y --force-yes --no-install-recommends \
+    &&   dpkg-dev \
+    &&   nginx \
+    &&   inotify-tools \ 
+    &&   supervisor \
+    &&   python-gevent \
     && apt-get autoclean \
     && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/*
