@@ -3,7 +3,20 @@ Debian Paket Sunucusu
 
 apt-repo-server is a debian repository server. It monitors file changing event(inotify), then reproduce index file(Packages.gz) automatically.
 
-# [Supervisord](http://supervisord.org/running.html)
+### [exec](https://www.youtube.com/watch?v=MSbpStxXv84)
+---------------------
+Linux'ta `exec` komutu, bash'ın üzerinden bir komut çalıştırmak için kullanılır. Bu komut yeni bir işlem oluşturmaz, sadece bash'i çalıştıracak komutla değiştirir. `exec` komutu başarılı olursa, çağırma işlemine geri dönmez. `exec` komutu yeni bir işlem oluşturmaz. Terminalden `exec` komutunu çalıştırdığımızda, devam eden terminal işlemi, `exec` komutunun argümanı olarak sağlanan komut ile değiştirilir.
+
+```
+exec [-cl] [-a name] [command [arguments]] [redirection ...]
+
+Options:
+  c      : Komutu boş ortamda (environment) çalıştırır.
+  a name : Komutun sıfırıncı argümanı olarak bir isim vermek için kullanılır
+  l      : Komutun sıfırıncı argümanı olarak tire iletmek için kullanılır.
+```
+
+### [Supervisord](http://supervisord.org/running.html)
 ----------------------
 Supervisord veya Supervisor arka plan programı (daemon), açık kaynaklı bir süreç yönetim sistemidir. Özetle: bir süreç herhangi bir nedenle çökerse, Supervisor onu yeniden başlatır. Supervisor, kullanıcılarının UNIX benzeri işletim sistemlerinde bir dizi işlemi izlemesini ve kontrol etmesini sağlayan bir istemci/sunucu sistemidir. 
 
