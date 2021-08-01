@@ -2,6 +2,14 @@
 
 # Kullanım örneği: sudo ./canan.sh -p cem -v 1.0 -b "a(=1.0), b(=2)"
 
+# $ sudo ./paket_uret.sh -p a -v 1.0.0.600 -b "a-lib(=1.0.0.322)"
+# paket adi: a
+# paket surum no: 1.0.0.600
+# bagimli paketler: a-lib(=1.0.0.322)
+# Paket dizini mevcut degil olusturulacak...
+# a/DEBIAN dizini oluşturuldu.
+# dpkg-deb: building package 'a' in './dists/trusty/main/binary-amd64/a_1.0.0.600.deb'.
+
 usage="$(basename "$0") paket_adı sürüm_numarası bağımlı_olduğu_paket_adı
 Argümanlar:
     -h  bu yardım metnini gösterir
