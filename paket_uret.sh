@@ -73,7 +73,7 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-repo_paket_dizini="./dists/trusty/main/binary-amd64"
+repo_paket_dizini="./data/dists/focal/main/binary-amd64"
 
 if [ ! -d "$repo_paket_dizini" ]
 then

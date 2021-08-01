@@ -1,8 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import subprocess as sp
-from gevent.queue import Queue
-from Queue import Empty as QueueEmpty
+#--> python3 from queue import Queue, Empty
+from queue import Queue
+#from gevent.queue import Queue
+from queue import Empty as QueueEmpty
+#from Queue import Empty as QueueEmpty
 from gevent import spawn
 import signal
 from gevent import select
@@ -22,7 +25,7 @@ def info(msg):
 
 def do_scan():
     info('Scanning...')
-    for dist in os.getenv('DISTS', 'trusty').split(','):
+    for dist in os.getenv('DISTS', 'focal').split(','):
         for arch in os.getenv('ARCHS', 'amd64,i386').split(','):
             path = '/data/dists/{}/main/binary-{}'.format(dist, arch)
             if not os.path.exists(path):
