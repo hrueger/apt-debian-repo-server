@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  deb-repo:
+    build: .
+    ports:
+      - "10001:80"
+    volumes:
+      - ${PWD}/data:/data 
