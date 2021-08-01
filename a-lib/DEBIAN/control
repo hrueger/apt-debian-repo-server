@@ -1,0 +1,9 @@
+Package: a-lib
+Version: 1.0.0.323
+Architecture: amd64
+Maintainer: a
+Depends: 
+Conflicts:
+Section: web
+Priority: standard
+Description: retrieves files from the web
