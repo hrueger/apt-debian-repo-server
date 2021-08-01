@@ -5,6 +5,36 @@ apt-repo-server is a debian repository server. It monitors file changing event(i
 
 ### [exec](https://www.youtube.com/watch?v=MSbpStxXv84)
 ---------------------
+`exec` komutunun buradaki kullanımını göreceğimiz startup.sh dosyasında şöyle geçiyor:
+
+```bash
+exec /usr/bin/supervisord -n
+```
+ubuntu:latest yansısının çalıştırdığı `bash` uygulamasını `exec` ile `/usr/bin/supervisord` uygulamasıyla değiştiriyoruz. Supervisor uygulamasının ayarlarında ise hem nginx başlatılıyor hem de scan.py python uygulaması yönetiliyor:
+
+```ini
+[program:nginx]
+priority=10
+directory=/
+command=/usr/sbin/nginx -g "daemon off;"
+user=root
+autostart=true
+autorestart=true
+stopsignal=QUIT
+redirect_stderr=true
+
+[program:python]
+priority=15
+directory=/data
+command=python /scan.py
+user=root
+autostart=true
+autorestart=true
+stopsignal=QUIT
+redirect_stderr=true
+```
+
+
 Linux'ta `exec` komutu, bash'ın üzerinden bir komut çalıştırmak için kullanılır. Bu komut yeni bir işlem oluşturmaz, sadece bash'i çalıştıracak komutla değiştirir. `exec` komutu başarılı olursa, çağırma işlemine geri dönmez. `exec` komutu yeni bir işlem oluşturmaz. Terminalden `exec` komutunu çalıştırdığımızda, devam eden terminal işlemi, `exec` komutunun argümanı olarak sağlanan komut ile değiştirilir.
 
 ```
@@ -22,7 +52,7 @@ Supervisord veya Supervisor arka plan programı (daemon), açık kaynaklı bir s
 
 Launchd, daemontools ve runit gibidir ve bu programların bazılarından farklı olarak, “işlem kimliği 1” (pid 1 yani ilk çalışacak program) olarak init'in yerini alacak şekilde çalıştırılması amaçlanmamıştır. Bunun yerine, bir proje veya müşteriyle ilgili süreçleri kontrol etmek için kullanılması ve diğer herhangi bir program gibi önyükleme sırasında başlaması amaçlanmıştır. 
 
-```
+```bash
 sudo apt install supervisor
 ```
 
@@ -33,14 +63,14 @@ ADD supervisord.conf /etc/supervisor/
 ```
 
 Hizmet yürütülebilir dosyasının root tarafından sahiplenildiğinden ve yürütülebilir olduğundan emin olun:
-```
+```bash
 sudo chown root:root /etc/init.d/supervisord
 sudo chmod 775 /etc/init.d/supervisord
 ```
 
 Başlatmak için:
 1)
-```
+```bash
 sudo /etc/init.d/supervisord start
 ```
 2) komut satırında -n bayrağını ileterek ön planda başlatabilirsiniz.
@@ -51,18 +81,18 @@ Usage
 
 Run server
 
-```
-$ docker run -it -v ${PWD}/data:/data -p 10000:80 dorowu/apt-repo-server
+```bash
+docker run -it -v ${PWD}/data:/data -p 10000:80 dorowu/apt-repo-server
 ```
 
 Export a debian package
-```
-$ cp qnap-fix-input_0.1_all.deb  data/dists/trusty/main/binary-amd64/
+```bash
+cp qnap-fix-input_0.1_all.deb  data/dists/trusty/main/binary-amd64/
 ```
 
 File structure looks like
-```
-$ tree data/
+```bash
+tree data/
 data/
 └── dists
     ├── precise
@@ -81,8 +111,8 @@ data/
 ```
 
 Packages.gz looks like
-```
-$ zcat data/dists/trusty/main/binary-amd64/Packages.gz
+```bash
+zcat data/dists/trusty/main/binary-amd64/Packages.gz
 Package: qnap-fix-input
 Version: 0.1
 Architecture: all
@@ -100,8 +130,8 @@ Description: QNAP fix
 ```
 
 Update /etc/apt/sources.list
-```
-$ echo deb http://127.0.0.1:10000 trusty main | sudo tee -a /etc/apt/sources.list
+```bash
+echo deb http://127.0.0.1:10000 trusty main | sudo tee -a /etc/apt/sources.list
 ```
 
 
