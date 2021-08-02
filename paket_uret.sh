@@ -42,11 +42,12 @@ while getopts h:p:v:b: flag; do
   esac
 done
 
+paket_olusturma_dizini="paketler"
 
-if [ ! -d ${paket_adi}/DEBIAN ]
+if [ ! -d $paket_olusturma_dizini/${paket_adi}/DEBIAN ]
 then
   echo "Paket dizini mevcut degil olusturulacak..."
-  mkdir -p "${paket_adi}/DEBIAN"
+  mkdir -p "${paket_olusturma_dizini}/${paket_adi}/DEBIAN"
   if [ $? -eq 0 ]; then
     echo "${paket_adi}/DEBIAN dizini oluşturuldu."
   else
@@ -56,7 +57,7 @@ then
 fi
 
 # DEBIAN tanım dosyası olusturulacak
-cat << EOF > ./$paket_adi/DEBIAN/control
+cat << EOF > ./$paket_olusturma_dizini/$paket_adi/DEBIAN/control
 Package: $paket_adi
 Version: $paket_surum_no
 Architecture: amd64
@@ -81,4 +82,4 @@ then
     exit 1
 fi
 
-dpkg-deb  -b  ./$paket_adi  $repo_paket_dizini/${paket_adi}_${paket_surum_no}.deb
+dpkg-deb  -b  ./$paket_olusturma_dizini/$paket_adi  $repo_paket_dizini/${paket_adi}_${paket_surum_no}.deb
