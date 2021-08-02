@@ -3,18 +3,28 @@
 
 #!/bin/bash
 
-amd64=/data/dists/focal/main/binary-amd64
-i386=/data/dists/focal/main/binary-i386
+nginx_root=/data
+amd64=dists/focal/main/binary-amd64
+#i386=/data/dists/focal/main/binary-i386
 
 monitor() {
-   while inotifywait -e attrib,modify,create,delete $1
+   while inotifywait -e attrib,modify,create,delete $nginx_root/$amd64
    do
-        echo "packages updated folder:" $1/
+        echo ">> packages updated folder:" $nginx_root/$amd64
         #rsync -avz --exclude 'amd64/' $1/ $1/amd64/
-        cd $1
-        dpkg-scanpackages -m . /dev/null | gzip -9c > Packages.gz
+
+        cd $nginx_root
+        #dpkg-scanpackages -m dists/focal/main/binary-amd64 | gzip -9c > Packages.gz
+
+        # /data/..../binary-amd64 dizinini tarayacak ancak her paketin Package.gz içinde tanımladığı
+        # FileName alanına dists/focal/main/binary-amd64 yazmasını istiyoruz
+        # Çünkü nginx'in root dizini /data dizini olduğu için http üstünden paketi indirirken default virtual site bilgilerine
+        # http://x.x.x.x/dists/focal/main/binary-amd64/<paket.deb>  diyerek indirmesini sağlayacak
+        dpkg-scanpackages -m $amd64 | gzip -9c > $amd64/Packages.gz
     done
 }
 
-monitor "$amd64" 
+monitor
+
+#& monitor "$amd64" 
 #& monitor "$i386" 
