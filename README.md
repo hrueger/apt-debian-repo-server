@@ -90,7 +90,11 @@ Export a debian package
 cp qnap-fix-input_0.1_all.deb  data/dists/trusty/main/binary-amd64/
 ```
 
-File structure looks like
+Ubuntu 20.04 (kod adı focal) ile hazırladım ve dizin yapısı şöyle oldu:
+![image](https://user-images.githubusercontent.com/261946/127843724-0aeb7ec5-6873-4085-9c49-7a5027df34c3.png)
+
+
+Aşağıdaki dizin yapısı 14.04 (trusty) için olup buna dönebilmek için ilk çatalladığım repoya erişmeniz gerekiyor!
 ```bash
 tree data/
 data/
@@ -154,26 +158,39 @@ root@688b7d95e1c6:/# echo deb [trusted=yes] http://172.16.16.2 focal main > /etc
 root@688b7d95e1c6:/# apt update
 Ign:1 http://172.16.16.2 focal InRelease
 Ign:2 http://172.16.16.2 focal Release
-Get:3 http://172.16.16.2 focal/main amd64 Packages [264 B]
-Ign:4 http://172.16.16.2 focal/main all Packages
-Ign:4 http://172.16.16.2 focal/main all Packages
-Ign:4 http://172.16.16.2 focal/main all Packages
-Ign:4 http://172.16.16.2 focal/main all Packages
-Ign:4 http://172.16.16.2 focal/main all Packages
-Ign:4 http://172.16.16.2 focal/main all Packages
-Ign:4 http://172.16.16.2 focal/main all Packages
-Fetched 264 B in 0s (11.5 kB/s)
+Ign:3 http://172.16.16.2 focal/main all Packages
+Get:4 http://172.16.16.2 focal/main amd64 Packages [261 B]
+Ign:3 http://172.16.16.2 focal/main all Packages
+Ign:3 http://172.16.16.2 focal/main all Packages
+Ign:3 http://172.16.16.2 focal/main all Packages
+Ign:3 http://172.16.16.2 focal/main all Packages
+Ign:3 http://172.16.16.2 focal/main all Packages
+Ign:3 http://172.16.16.2 focal/main all Packages
+Fetched 261 B in 0s (16.6 kB/s)
 Reading package lists... Done
 Building dependency tree
 Reading state information... Done
 All packages are up to date.
-root@688b7d95e1c6:/# apt list a
-Listing... Done
-a/unknown 1.0.0 amd64
-
 root@688b7d95e1c6:/#
+root@688b7d95e1c6:/# apt list b
+Listing... Done
+b/unknown 1.0 amd64
 ```
 
+![image](https://user-images.githubusercontent.com/261946/127844011-e011adff-2b3c-4bb5-ab35-6ec5eb81fa01.png)
+
+Paket oluşturmak için:
+- Hiç bağımlılığı yoksa:
+```bash 
+# ./paket_uret.sh -p b -v 1.0
+```
+
+- Bağımlılığı varsa:
+```bash 
+# ./paket_uret.sh -p b -v 1.0 -b "a-lib(=1.0), b, c-lib(<<2.0)"
+```
+
+![image](https://user-images.githubusercontent.com/261946/127844210-0f758f74-fbe7-4e5a-8364-ff291655179e.png)
 
 
 
