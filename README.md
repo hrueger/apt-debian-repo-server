@@ -130,9 +130,51 @@ Description: QNAP fix
 ```
 
 Update /etc/apt/sources.list
+----
+Eğer host makinanız üstünden konteynere bağlanacaksanız 
+yani konteyner sizin debian paket sunucunu ve host makinanız sizin paketleri çektiğiniz makinanız ise
+
 ```bash
 echo deb http://127.0.0.1:10000 trusty main | sudo tee -a /etc/apt/sources.list
 ```
+
+Eğer docker-compose.yml içinde hem debian repo sunucunuz hem de debian paketlerinizi çekeceğiniz bir istemciniz varsa
+bu durumda docker-compose.yml içinde her iki konteyner için atanmış ağda bu konteynerler birbirlerini 172.x.x.x IP adresleri üstünden bulacaklardır.
+Bu durumda istemciye paket sunucusu olarak şunu vermelisiniz:
+
+```bash
+echo deb [trusted=yes] http://172.16.16.2 focal main > /etc/apt/sources.list
+```
+
+Repo adresini girdikten sonra size `apt update` ile paket bilgilerini çekmek kalacak:
+
+```
+root@688b7d95e1c6:/# echo deb [trusted=yes] http://172.16.16.2 focal main > /etc/apt/sources.list
+
+root@688b7d95e1c6:/# apt update
+Ign:1 http://172.16.16.2 focal InRelease
+Ign:2 http://172.16.16.2 focal Release
+Get:3 http://172.16.16.2 focal/main amd64 Packages [264 B]
+Ign:4 http://172.16.16.2 focal/main all Packages
+Ign:4 http://172.16.16.2 focal/main all Packages
+Ign:4 http://172.16.16.2 focal/main all Packages
+Ign:4 http://172.16.16.2 focal/main all Packages
+Ign:4 http://172.16.16.2 focal/main all Packages
+Ign:4 http://172.16.16.2 focal/main all Packages
+Ign:4 http://172.16.16.2 focal/main all Packages
+Fetched 264 B in 0s (11.5 kB/s)
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+All packages are up to date.
+root@688b7d95e1c6:/# apt list a
+Listing... Done
+a/unknown 1.0.0 amd64
+
+root@688b7d95e1c6:/#
+```
+
+
 
 
 License
