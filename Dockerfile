@@ -17,13 +17,14 @@ RUN apt-get autoclean
 RUN apt-get autoremove
 RUN rm -rf /var/lib/apt/lists/*
 
-ADD supervisord.conf /etc/supervisor/
-ADD nginx.conf /etc/nginx/sites-enabled/default
-ADD startup.sh /
-ADD scan.sh /
+ADD ./configs/supervisord.conf /etc/supervisor/
+ADD ./configs/nginx.conf /etc/nginx/sites-enabled/default
 
-ENV DISTS trusty
+ADD ./repo-scripts/ /repo-scripts
+ADD ./package-generator/ /package-generator
+
+ENV DISTS focal
 ENV ARCHS amd64,i386
 EXPOSE 80
 VOLUME /data
-ENTRYPOINT ["/startup.sh"]
+ENTRYPOINT ["/repo-scripts/startup.sh"]

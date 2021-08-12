@@ -1,8 +1,8 @@
-Package: b
-Version: 1.0
+Package: cenk
+Version: 
 Architecture: amd64
 Maintainer: a
-Depends: b-lib (= 1.0)
+Depends: cem
 Conflicts:
 Section: web
 Priority: standard

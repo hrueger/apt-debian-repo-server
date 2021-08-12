@@ -1,7 +1,7 @@
 #Docker debian repository makinesindeki /debrepo dizini nfs share olarak kullanılmaktadır.
 #Bu script ile NFS server tarafında /debrepo dizini altındaki paket guncellemeleri otomatik olarak algılanıp, scan edilir.
 
-#!/bin/bash
+#!/usr/bin/bash
 
 nginx_root=/data
 amd64=dists/focal/main/binary-amd64

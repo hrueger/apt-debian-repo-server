@@ -11,6 +11,7 @@
 # dpkg-deb: building package 'a' in './dists/trusty/main/binary-amd64/a_1.0.0.600.deb'.
 
 usage="$(basename "$0") paket_adı sürüm_numarası bağımlı_olduğu_paket_adı
+
 Argümanlar:
     -h  bu yardım metnini gösterir
     -p  paket adını
@@ -18,7 +19,7 @@ Argümanlar:
     -b  paketin bağımlı olduğu paket bilgilerini
 
 Örneğin:
-    $(basename "$0") paket_a 1.0 \"paket_b(>=1.0.1) paket_c(=2.0) paket_d\"
+    $(basename "$0") -p paket_a -v 1.0 -b \"paket_b(>=1.0.1) paket_c(=2.0) paket_d\"
 "
 
 while getopts h:p:v:b: flag; do
@@ -47,7 +48,9 @@ paket_olusturma_dizini="paketler"
 if [ ! -d $paket_olusturma_dizini/${paket_adi}/DEBIAN ]
 then
   echo "Paket dizini mevcut degil olusturulacak..."
-  mkdir -p "${paket_olusturma_dizini}/${paket_adi}/DEBIAN"
+  mkdir -m 775 -p "${paket_olusturma_dizini}/${paket_adi}/DEBIAN"  
+  # chmod -R 775 ./$paket_olusturma_dizini/$paket_adi/DEBIAN
+
   if [ $? -eq 0 ]; then
     echo "${paket_adi}/DEBIAN dizini oluşturuldu."
   else
@@ -69,12 +72,13 @@ Priority: standard
 Description: retrieves files from the web
 EOF
 
+
 if [ $? -ne 0 ]; then
-  echo "DEBIAN/control dosyasi olusturulamadi!"
+  echo "./$paket_olusturma_dizini/$paket_adi/DEBIAN/control dosyasi olusturulamadi!"
   exit 1
 fi
 
-repo_paket_dizini="./data/dists/focal/main/binary-amd64"
+repo_paket_dizini="/data/dists/focal/main/binary-amd64"
 
 if [ ! -d "$repo_paket_dizini" ]
 then

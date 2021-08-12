@@ -1,9 +1,0 @@
-Package: b-lib
-Version: 0.9
-Architecture: amd64
-Maintainer: a
-Depends: 
-Conflicts:
-Section: web
-Priority: standard
-Description: retrieves files from the web
