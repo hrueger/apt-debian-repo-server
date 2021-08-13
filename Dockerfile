@@ -20,11 +20,15 @@ RUN rm -rf /var/lib/apt/lists/*
 ADD ./configs/supervisord.conf /etc/supervisor/
 ADD ./configs/nginx.conf /etc/nginx/sites-enabled/default
 
-ADD ./repo-scripts/ /repo-scripts
-ADD ./package-generator/ /package-generator
+# ADD ./repo-scripts/ /repo-scripts
+# ADD ./package-generator/ /package-generator
 
 ENV DISTS focal
 ENV ARCHS amd64,i386
 EXPOSE 80
+
+VOLUME /repo-scripts
+VOLUME /package-generator
 VOLUME /data
+
 ENTRYPOINT ["/repo-scripts/startup.sh"]

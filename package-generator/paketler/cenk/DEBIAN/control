@@ -1,9 +1,0 @@
-Package: cenk
-Version: 
-Architecture: amd64
-Maintainer: a
-Depends: cem
-Conflicts:
-Section: web
-Priority: standard
-Description: retrieves files from the web

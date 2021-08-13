@@ -3,6 +3,17 @@ Debian Paket Sunucusu
 
 apt-repo-server is a debian repository server. It monitors file changing event(inotify), then reproduce index file(Packages.gz) automatically.
 
+
+### Kurulum 
+```
+docker-compose up -d
+# WSL içinden veya git bash / Conemu gibi komut satırı programlarının üstünden bash ile
+# çalıştırın aşağıdaki kodu (neticede linux içindeki kabuk betiği)
+cd package-generator
+./gen-package-inside-docker.sh -p cem -v 1.0 -b "cenk(>=1.0.1) canan(>=2.0)"
+```
+
+
 ### [exec](https://www.youtube.com/watch?v=MSbpStxXv84)
 ---------------------
 `exec` komutunun buradaki kullanımını göreceğimiz startup.sh dosyasında şöyle geçiyor:

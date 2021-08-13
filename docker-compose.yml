@@ -8,7 +8,9 @@ services:
     ports:
       - "10001:80"
     volumes:
-      - ./data:/data 
+      # - ./data:/data 
+      - ./repo-scripts:/repo-scripts
+      - ./package-generator:/package-generator
     networks:
       deb-agi:
         ipv4_address: 172.16.16.2
@@ -17,7 +19,9 @@ services:
     tty: true
     container_name: deb-istemci
     image: ubuntu:focal
-#    command: echo "deb http://172.16.16.2 trusty main" > /etc/apt/sources.list
+    # command: ["echo deb http://172.16.16.2 focal main > /etc/apt/sources.list", "--","bash"]
+    volumes: 
+      - ./configs/sources.list:/etc/apt/sources.list
     networks:
       deb-agi:
         ipv4_address: 172.16.16.3
