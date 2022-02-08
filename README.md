@@ -1,5 +1,4 @@
-# Debian Packet Server
-=========================
+# APT Repository Server
 
 apt-repo-server is a debian repository server. It monitors file changing event(inotify), then reproduce index file(Packages.gz) automatically.
 
