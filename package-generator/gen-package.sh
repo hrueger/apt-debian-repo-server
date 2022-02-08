@@ -19,7 +19,7 @@ Arguments:
      -b contains the package information on which the package is dependent. 
 
 Example:
-    $(basename "$0") -p paket_a -v 1.0 -b \"paket_b(>=1.0.1) paket_c(=2.0) paket_d\"
+    $(basename "$0") -p packet_a -v 1.0 -b \"packet_b(>=1.0.1) packet_c(=2.0) packet_d\"
 "
 
 while getopts h:p:v:b: flag; do
@@ -47,7 +47,7 @@ package_build_directory="packets"
 
 if [ ! -d $package_build_directory/${packet_name}/DEBIAN ]
 then
-  echo "Paket dizini mevcut degil olusturulacak..."
+  echo "Packet directory does not exist to be created..."
   mkdir -m 775 -p "${package_build_directory}/${packet_name}/DEBIAN"  
   # chmod -R 775 ./$package_build_directory/$packet_name/DEBIAN
 
@@ -82,7 +82,7 @@ repo_package_directory ="/data/dists/focal/main/binary-amd64"
 
 if [ ! -d "$repo_package_directory " ]
 then
-    echo "The directory ($repo_package_directory) where the package will be installed and the docker repo will scan does not exist, it will be extracted !"
+    echo "The directory ($repo_package_directory) where the package will be installed and the docker repo will scan does not exist, it will be extracted!"
     exit 1
 fi
 

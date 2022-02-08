@@ -1,10 +1,10 @@
-Debian Paket Sunucusu
+# Debian Packet Server
 =========================
 
 apt-repo-server is a debian repository server. It monitors file changing event(inotify), then reproduce index file(Packages.gz) automatically.
 
 
-### Setup 
+## Setup 
 ```
 docker-compose up -d
 # With bash from within WSL or above command line programs like git bash / Conemu 
@@ -13,16 +13,15 @@ cd package-generator
 ./gen-package-inside-docker.sh -p cem -v 1.0 -b "cenk(>=1.0.1) canan(>=2.0)"
 ```
 
-Usage
-=======================
+## Usage
 
-Run server
+### Run server
 
 ```bash
 docker run -it -v ${PWD}/data:/data -p 10000:80 dorowu/apt-repo-server
 ```
 
-Export a debian package
+### Export a debian package
 ```bash
 cp qnap-fix-input_0.1_all.deb  data/dists/trusty/main/binary-amd64/
 ```
@@ -69,8 +68,7 @@ Description: QNAP fix
  UNKNOWN
 ```
 
-Update /etc/apt/sources.list
-----
+### Update /etc/apt/sources.list
 If you are going to connect to the container on your host machine
 that is, if the container is your debian package server and your host machine is your machine from which you pull the packages 
 
@@ -118,19 +116,18 @@ b/unknown 1.0 amd64
 To create a package:
 - If it has no dependencies:
 ```bash
-# ./packet_uret.sh -p b -v 1.0
+# ./gen_package.sh -p b -v 1.0
 ```
 
 - If it has an dependency:
 ```bash
-# ./packet_uret.sh -p b -v 1.0 -b "a-lib(=1.0), b, c-lib(<<2.0)"
+# ./gen_package.sh -p b -v 1.0 -b "a-lib(=1.0), b, c-lib(<<2.0)"
 ``` 
 
 ![image](https://user-images.githubusercontent.com/261946/127844210-0f758f74-fbe7-4e5a-8364-ff291655179e.png)
 
 
 
-License
-==================
+## License
 
 apt-repo is under the Apache 2.0 license. See the LICENSE file for details.
