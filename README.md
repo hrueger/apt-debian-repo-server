@@ -4,88 +4,14 @@ Debian Paket Sunucusu
 apt-repo-server is a debian repository server. It monitors file changing event(inotify), then reproduce index file(Packages.gz) automatically.
 
 
-### Kurulum 
+### Setup 
 ```
 docker-compose up -d
-# WSL içinden veya git bash / Conemu gibi komut satırı programlarının üstünden bash ile
-# çalıştırın aşağıdaki kodu (neticede linux içindeki kabuk betiği)
+# With bash from within WSL or above command line programs like git bash / Conemu 
+# run the following code (the shell script in linux after all) 
 cd package-generator
 ./gen-package-inside-docker.sh -p cem -v 1.0 -b "cenk(>=1.0.1) canan(>=2.0)"
 ```
-
-
-### [exec](https://www.youtube.com/watch?v=MSbpStxXv84)
----------------------
-`exec` komutunun buradaki kullanımını göreceğimiz startup.sh dosyasında şöyle geçiyor:
-
-```bash
-exec /usr/bin/supervisord -n
-```
-ubuntu:latest yansısının çalıştırdığı `bash` uygulamasını `exec` ile `/usr/bin/supervisord` uygulamasıyla değiştiriyoruz. Supervisor uygulamasının ayarlarında ise hem nginx başlatılıyor hem de scan.py python uygulaması yönetiliyor:
-
-```ini
-[program:nginx]
-priority=10
-directory=/
-command=/usr/sbin/nginx -g "daemon off;"
-user=root
-autostart=true
-autorestart=true
-stopsignal=QUIT
-redirect_stderr=true
-
-[program:python]
-priority=15
-directory=/data
-command=python /scan.py
-user=root
-autostart=true
-autorestart=true
-stopsignal=QUIT
-redirect_stderr=true
-```
-
-
-Linux'ta `exec` komutu, bash'ın üzerinden bir komut çalıştırmak için kullanılır. Bu komut yeni bir işlem oluşturmaz, sadece bash'i çalıştıracak komutla değiştirir. `exec` komutu başarılı olursa, çağırma işlemine geri dönmez. `exec` komutu yeni bir işlem oluşturmaz. Terminalden `exec` komutunu çalıştırdığımızda, devam eden terminal işlemi, `exec` komutunun argümanı olarak sağlanan komut ile değiştirilir.
-
-```
-exec [-cl] [-a name] [command [arguments]] [redirection ...]
-
-Options:
-  c      : Komutu boş ortamda (environment) çalıştırır.
-  a name : Komutun sıfırıncı argümanı olarak bir isim vermek için kullanılır
-  l      : Komutun sıfırıncı argümanı olarak tire iletmek için kullanılır.
-```
-
-### [Supervisord](http://supervisord.org/running.html)
-----------------------
-Supervisord veya Supervisor arka plan programı (daemon), açık kaynaklı bir süreç yönetim sistemidir. Özetle: bir süreç herhangi bir nedenle çökerse, Supervisor onu yeniden başlatır. Supervisor, kullanıcılarının UNIX benzeri işletim sistemlerinde bir dizi işlemi izlemesini ve kontrol etmesini sağlayan bir istemci/sunucu sistemidir. 
-
-Launchd, daemontools ve runit gibidir ve bu programların bazılarından farklı olarak, “işlem kimliği 1” (pid 1 yani ilk çalışacak program) olarak init'in yerini alacak şekilde çalıştırılması amaçlanmamıştır. Bunun yerine, bir proje veya müşteriyle ilgili süreçleri kontrol etmek için kullanılması ve diğer herhangi bir program gibi önyükleme sırasında başlaması amaçlanmıştır. 
-
-```bash
-sudo apt install supervisor
-```
-
-`/etc/init.d/supervisord` Dosyası ayarları içerir
-
-``` Dockerfile 
-ADD supervisord.conf /etc/supervisor/
-```
-
-Hizmet yürütülebilir dosyasının root tarafından sahiplenildiğinden ve yürütülebilir olduğundan emin olun:
-```bash
-sudo chown root:root /etc/init.d/supervisord
-sudo chmod 775 /etc/init.d/supervisord
-```
-
-Başlatmak için:
-1)
-```bash
-sudo /etc/init.d/supervisord start
-```
-2) komut satırında -n bayrağını ileterek ön planda başlatabilirsiniz.
-
 
 Usage
 =======================
@@ -101,11 +27,10 @@ Export a debian package
 cp qnap-fix-input_0.1_all.deb  data/dists/trusty/main/binary-amd64/
 ```
 
-Ubuntu 20.04 (kod adı focal) ile hazırladım ve dizin yapısı şöyle oldu:
+I prepared it with Ubuntu 20.04 (codename focal) and the directory structure was like this:
 ![image](https://user-images.githubusercontent.com/261946/127843724-0aeb7ec5-6873-4085-9c49-7a5027df34c3.png)
 
-
-Aşağıdaki dizin yapısı 14.04 (trusty) için olup buna dönebilmek için ilk çatalladığım repoya erişmeniz gerekiyor!
+The directory structure below is for 14.04 (trusty) and you need to access the first repo I forked to revert to it! 
 ```bash
 tree data/
 data/
@@ -146,22 +71,22 @@ Description: QNAP fix
 
 Update /etc/apt/sources.list
 ----
-Eğer host makinanız üstünden konteynere bağlanacaksanız 
-yani konteyner sizin debian paket sunucunu ve host makinanız sizin paketleri çektiğiniz makinanız ise
+If you are going to connect to the container on your host machine
+that is, if the container is your debian package server and your host machine is your machine from which you pull the packages 
 
 ```bash
 echo deb http://127.0.0.1:10000 trusty main | sudo tee -a /etc/apt/sources.list
 ```
 
-Eğer docker-compose.yml içinde hem debian repo sunucunuz hem de debian paketlerinizi çekeceğiniz bir istemciniz varsa
-bu durumda docker-compose.yml içinde her iki konteyner için atanmış ağda bu konteynerler birbirlerini 172.x.x.x IP adresleri üstünden bulacaklardır.
-Bu durumda istemciye paket sunucusu olarak şunu vermelisiniz:
+If you have both a debian repo server in docker-compose.yml and a client to pull your debian packages from
+In this case, in the network assigned for both containers in docker-compose.yml, these containers will find each other over the 172.x.x.x IP addresses.
+In this case, you must give the client as the packet server: 
 
 ```bash
 echo deb [trusted=yes] http://172.16.16.2 focal main > /etc/apt/sources.list
 ```
 
-Repo adresini girdikten sonra size `apt update` ile paket bilgilerini çekmek kalacak:
+After entering the repo address, you will have to pull the package information with `apt update`: 
 
 ```
 root@688b7d95e1c6:/# echo deb [trusted=yes] http://172.16.16.2 focal main > /etc/apt/sources.list
@@ -190,16 +115,16 @@ b/unknown 1.0 amd64
 
 ![image](https://user-images.githubusercontent.com/261946/127844011-e011adff-2b3c-4bb5-ab35-6ec5eb81fa01.png)
 
-Paket oluşturmak için:
-- Hiç bağımlılığı yoksa:
-```bash 
-# ./paket_uret.sh -p b -v 1.0
+To create a package:
+- If it has no dependencies:
+```bash
+# ./packet_uret.sh -p b -v 1.0
 ```
 
-- Bağımlılığı varsa:
-```bash 
-# ./paket_uret.sh -p b -v 1.0 -b "a-lib(=1.0), b, c-lib(<<2.0)"
-```
+- If it has an dependency:
+```bash
+# ./packet_uret.sh -p b -v 1.0 -b "a-lib(=1.0), b, c-lib(<<2.0)"
+``` 
 
 ![image](https://user-images.githubusercontent.com/261946/127844210-0f758f74-fbe7-4e5a-8364-ff291655179e.png)
 

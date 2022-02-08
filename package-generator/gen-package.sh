@@ -1,24 +1,24 @@
 #! /bin/bash
 
-# Kullanım örneği: sudo ./canan.sh -p cem -v 1.0 -b "a(=1.0), b(=2)"
+# Usage example: sudo ./canan.sh -p cem -v 1.0 -b "a(=1.0), b(=2)"
 
-# $ sudo ./paket_uret.sh -p a -v 1.0.0.600 -b "a-lib(=1.0.0.322)"
-# paket adi: a
-# paket surum no: 1.0.0.600
-# bagimli paketler: a-lib(=1.0.0.322)
-# Paket dizini mevcut degil olusturulacak...
-# a/DEBIAN dizini oluşturuldu.
-# dpkg-deb: building package 'a' in './dists/trusty/main/binary-amd64/a_1.0.0.600.deb'.
+# $ sudo ./packet_uret.sh -p a -v 1.0.0.600 -b "a-lib(=1.0.0.322)"
+# package name: a
+# package version no: 1.0.0.600
+# dependent packages: a-lib(=1.0.0.322)
+# Package directory does not exist, will be created...
+# The a/DEBIAN directory has been created.
+# dpkg-deb: building package 'a' in './dists/trusty/main/binary-amd64/a_1.0.0.600.deb'. 
 
-usage="$(basename "$0") paket_adı sürüm_numarası bağımlı_olduğu_paket_adı
+usage="$(basename "$0") package_name version_number dependent_package_name 
 
-Argümanlar:
-    -h  bu yardım metnini gösterir
-    -p  paket adını
-    -v  paketin sürüm numarasını
-    -b  paketin bağımlı olduğu paket bilgilerini
+Arguments:
+     -h shows this help text
+     -p package name
+     -v is the version number of the package.
+     -b contains the package information on which the package is dependent. 
 
-Örneğin:
+Example:
     $(basename "$0") -p paket_a -v 1.0 -b \"paket_b(>=1.0.1) paket_c(=2.0) paket_d\"
 "
 
@@ -27,14 +27,14 @@ while getopts h:p:v:b: flag; do
     h) echo "$usage"
        exit
        ;;
-    p) echo "paket adi: $OPTARG" >&2
-       paket_adi=${OPTARG}
+    p) echo "package name: $OPTARG" >&2
+       packet_name=${OPTARG}
        ;;
-    v) echo "paket surum no: $OPTARG" >&2
-       paket_surum_no=${OPTARG}
+    v) echo "packet version: $OPTARG" >&2
+       packet_version=${OPTARG}
        ;;
-    b) echo "bagimli paketler: $OPTARG" >&2
-       bagimli_paketler=${OPTARG}
+    b) echo "dependent packages: $OPTARG" >&2
+       dependent_packages =${OPTARG}
        ;;
     *) printf "illegal option: -%s\n" "$OPTARG" >&2
        echo "$usage" >&2
@@ -43,29 +43,29 @@ while getopts h:p:v:b: flag; do
   esac
 done
 
-paket_olusturma_dizini="paketler"
+package_build_directory="packets"
 
-if [ ! -d $paket_olusturma_dizini/${paket_adi}/DEBIAN ]
+if [ ! -d $package_build_directory/${packet_name}/DEBIAN ]
 then
   echo "Paket dizini mevcut degil olusturulacak..."
-  mkdir -m 775 -p "${paket_olusturma_dizini}/${paket_adi}/DEBIAN"  
-  # chmod -R 775 ./$paket_olusturma_dizini/$paket_adi/DEBIAN
+  mkdir -m 775 -p "${package_build_directory}/${packet_name}/DEBIAN"  
+  # chmod -R 775 ./$package_build_directory/$packet_name/DEBIAN
 
   if [ $? -eq 0 ]; then
-    echo "${paket_adi}/DEBIAN dizini oluşturuldu."
+    echo "${packet_name}/DEBIAN directory created ."
   else
-    echo "Dizin olusturulamadi!"
+    echo "Could not create directory!"
     exit 1
   fi
 fi
 
-# DEBIAN tanım dosyası olusturulacak
-cat << EOF > ./$paket_olusturma_dizini/$paket_adi/DEBIAN/control
-Package: $paket_adi
-Version: $paket_surum_no
+# DEBIAN definition file will be created 
+cat << EOF > ./$package_build_directory/$packet_name/DEBIAN/control
+Package: $packet_name
+Version: $packet_version
 Architecture: amd64
 Maintainer: a
-Depends: $bagimli_paketler
+Depends: $dependent_packages 
 Conflicts:
 Section: web
 Priority: standard
@@ -74,16 +74,16 @@ EOF
 
 
 if [ $? -ne 0 ]; then
-  echo "./$paket_olusturma_dizini/$paket_adi/DEBIAN/control dosyasi olusturulamadi!"
+  echo "./$package_build_directory/$packet_name/DEBIAN/control file could not be created!"
   exit 1
 fi
 
-repo_paket_dizini="/data/dists/focal/main/binary-amd64"
+repo_package_directory ="/data/dists/focal/main/binary-amd64"
 
-if [ ! -d "$repo_paket_dizini" ]
+if [ ! -d "$repo_package_directory " ]
 then
-    echo "Paketin yuklenecegi ve docker repo'nun tarayacagi dizin ($repo_paket_dizini) mevcut degil, cikilacak!"
+    echo "The directory ($repo_package_directory) where the package will be installed and the docker repo will scan does not exist, it will be extracted !"
     exit 1
 fi
 
-dpkg-deb  -b  ./$paket_olusturma_dizini/$paket_adi  $repo_paket_dizini/${paket_adi}_${paket_surum_no}.deb
+dpkg-deb  -b  ./$package_build_directory/$packet_name  $repo_package_directory /${packet_name}_${packet_version}.deb

@@ -1,8 +1,6 @@
-#Docker debian repository makinesindeki /debrepo dizini nfs share olarak kullanılmaktadır.
-#Bu script ile NFS server tarafında /debrepo dizini altındaki paket guncellemeleri otomatik olarak algılanıp, scan edilir. 
 #!/usr/bin/bash
 
-# Ubuntu dağıtımı eğer focal ise ubuntu 20.04, bionic ise 18.04, xenial ise 16.04 diye gidiyor
+# Ubuntu distribution goes as ubuntu 20.04 if focal, 18.04 if bionic, 16.04 if xenial 
 distName=${DISTS-:focal}
 nginx_root=/data
 amd64="dists/$distName/main/binary-amd64"
@@ -18,19 +16,19 @@ monitor() {
     # inotifywait $nginx_root/$amd64 --monitor --event access --event attrib --event modify --event create --event delete | while read  PATH ACTION FILE
     
     ##################################################################################################
-    # In every deb file added into the directory, Pacakges.gz file will be produced by dpkg-scanpackages. 
+    # In every deb file added into the directory, Packages.gz file will be produced by dpkg-scanpackages. 
     # This will trigger inotifywait again and this cycle will be endless
     # To prevent this, "Packages.gz" file will be excluded.
     #
     # Don't forget to not to use PATH named variable!!!! That's why I used FILE_PATH
     #
-    # inotifywait dosya değiştirildiğinde (yani yazıldığında) dosyanın her parçası (64k büyüklüğünde parçalar halinde) yazıldığında MODIFY olayını tetikler.
-    # Dosya ne kadar büyükse o kadar çok "dosya değiştirildi" (MODIFY) olayı tetiklenir.
-    # Her dosya  oluşturma ve değiştirme sonunda yazma işinin son bulduğunu "close_write" olayıyla duyurur.
-    # Bu yüzden CREATE ve MODIFY yerine "close_write" olayına eklemlenmek daha verimli olacaktır.
+    # inotifywait triggers the MODIFY event when the file is modified (i.e. written) and every piece of the file is written (in 64k chunks). 
+    # The larger the file, the more "file modified" (MODIFY) events are triggered. 
+    # At the end of each file creation and modification, it announces the end of the write job with the "close_write" event. 
+    # So it would be more efficient to attach to the "close_write" event instead of CREATE and MODIFY. 
     # https://unix.stackexchange.com/questions/462459/inotifywait-tool-shows-multiple-logs-for-same-time-while-replacing-binary
     #
-    # grep ile sadece .deb dosyalarındaki değişimleri döngüye atıyoruz. (--exclude anahtarından daha kolay kullanırız deyu)
+    # With grep we only loop changes in .deb files. (Easier to use than the --exclude switch) 
     ##################################################################################################
     # inotifywait $nginx_root/$amd64 --monitor --event create | while read  FILE_PATH ACTION FILE
     # inotifywait $nginx_root/$amd64 --monitor --event create --format '%w%f' | while read  FILE  # Sadece dosyanın tam yolunu alırız.
@@ -45,13 +43,13 @@ monitor() {
         printf "\e[1;34m%-6s\e[m \n" "...::: >> ACTION: $ACTION "
         cd $nginx_root
 
-        # /data/..../binary-amd64 dizinini tarayacak ancak her paketin Package.gz içinde tanımladığı
-        # FileName alanına dists/focal/main/binary-amd64 yazmasını istiyoruz
-        # Çünkü nginx'in root dizini /data dizini olduğu için http üstünden paketi indirirken default virtual site bilgilerine
-        # http://x.x.x.x/dists/focal/main/binary-amd64/<paket.deb>  diyerek indirmesini sağlayacak
+        # It will scan the /data/..../binary-amd64 directory, but it's what each package defines in Package.gz 
+        # We want it to write dists/focal/main/binary-amd64 in the FileName field 
+        # Because nginx's root directory is /data directory, when downloading the package over http, the default virtual site information is entered. 
+        # It will download http://x.x.x.x/dists/focal/main/binary-amd64/<packet.deb> 
         dpkg-scanpackages -m $amd64 | gzip -9c > $amd64/Packages.gz
     done
-        echo "cenkkkkk"
+    echo "Done..."
 }
 
 monitor
